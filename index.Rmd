@@ -89,7 +89,7 @@ _according to twins studies._
 ]
 
 ---
-class: inverse, middle, center
+class: middle, center
 background-image: url(fig/missingheri.png)
 background-size: contain
 
@@ -336,18 +336,28 @@ class: middle
 upper right: rG; <br>
 lower left: r
 
-| traits        |         Alcohol          |          Stress          |        Education        |           SBP           |
-|:-------------|:------------------------:|:------------------------:|:-----------------------:|:-----------------------:|
-| **Alchol**    |            －            | -0.13<br> (-0.32, 0.07)  | -0.11<br> (-0.28, 0.06) |  **0.27<br> (0.12, 0.43)**  |
-| **Stress**    | -0.06 <br>(-0.08, -0.03) |            －            |  **0.42<br> (0.14, 0.71)**  | -0.23<br> (-0.48, 0.02) |
-| **Education** |  0.10<br> (0.07, 0.12)   |  0.03<br> (0.00, 0.07)   |           －            | -0.13 <br>(-0.32, 0.07) |
-| **SBP**       |  0.19<br> (0.17, 0.21)   | -0.14<br> (-0.17, -0.11) | -0.02<br> (-0.06, 0.01) |           －            |
+<table border='3' cellpadding='6' align="center" style="margin: 0px auto;">
+<tr> <th> Traits </th> <th> Alcohol </th> <th> Stress </th> <th> Education </th> <th> SBP </th>  </tr>
+  <tr> <th> Alchol </th> <td align="center"> － </td> <td  align="center"> -0.13 <br> (-0.32, 0.07) </td> <td  align="center"> -0.11 <br> (-0.28, 0.06) </td> <th align="center"> 0.27 <br> (0.12, 0.43) </th> </tr>
+  <tr> <th> Stress </th> <td align="center"> -0.06 <br> (-0.08, -0.03) </td> <td align="center"> － </td> <th align="center"> 0.42 <br> (0.14, 0.71) </th> <td align="center"> -0.23 <br> (-0.48, 0.02) </td> </tr>
+  <tr> <th> Education </th> <td align="center"> 0.10 <br> (0.07, 0.12) </td> <td  align="center"> 0.03 <br> (0.00, 0.07) </td> <td  align="center"> － </td> <td align="center"> -0.13 <br>(-0.32, 0.07) </td> </tr>
+  <tr> <th> SBP </th> <td align="center"> 0.19 <br>(0.17, 0.21) </td> <td align="center"> -0.14<br> (-0.17, -0.11) </td> <td align="center"> -0.02<br> (-0.06, 0.01) </td> <td align="center"> － </td> </tr>
+   </table>
+
+
+---
+class: middle, center
+background-image: url(fig/discussion.png)
+background-size: contain
+
 
 
 
 
 ---
 
-class: center, middle
+class: center, middle, inverse
+background-image: url(fig/dna.jpg)
+background-size: cover
 
 # Thanks!
