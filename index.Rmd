@@ -1,0 +1,353 @@
+---
+title: "GCTA"
+subtitle: "a tool for Genome-wide Complex Trait Analysis"
+author: "王　超辰"
+date: "2017/5/16"
+output:
+  xaringan::moon_reader:
+    css: zh-CN.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+class: center, middle
+
+# BACKGROUND
+
+---
+class: center, middle
+
+.pull-left[
+**Mendelian Traits**<br>_Sickle-cell disease_(鎌状赤血球病)
+![Mendelian traits](fig/Autorecessive.svg)
+]
+
+.pull-right[
+**Complex traits**<br>
+_Human height_(身長)
+![tall+with+short](fig/tall+with+short_XvWsvmY367UKQ.gif)
+<br>
+_Schizophrenia_(統合失調症)
+![schizophrenia](fig/schizophrenia_13xK2EOraYiGvC.gif)
+
+]
+
+---
+# Major Questions
+<br>
+
+- ### **Are these traits heritable ?**
+
+- ### **If so, what is the heritability ?**
+
+- ### **How many genes involved and where are they located ?**
+
+---
+## Complex traits such as height, BMI and SCZ are highly heritable
+
+_according to twins studies._
+
+- ### Human Height : $\sim 80\%$
+
+- ### Body mass index : $40\% \sim 60\%$
+
+- ### Schizophrenia : $\sim 80\%$
+
+
+---
+## The missing heritability problem
+
+.pull-left[
+#### Height:
+- 180 loci
+- $\sim$ 180K samples
+- $<$ 10 $\%$ of variance explained
+- heritablity = $\sim$ 80 $\%$
+
+#### BMI:
+- 32 loci
+- $\sim$ 250K samples
+- $\sim$ 1 $\%$ of variance explained
+]
+
+.pull-right[
+#### Schizophrenia
+- 22 loci
+- $\sim$ 21K cases/ $\sim$ 38K controls
+- $<$ 3 $\%$ of variance explained
+
+#### Possible reasons:
+- Effect sizes at individual SNPs are **too small to reach** $5 \times 10^{-8}$
+- Causal variants are **not in sufficient LD** with SNPs on the commercial arrays to be detected.
+]
+
+---
+class: inverse, middle, center
+background-image: url(fig/missingheri.png)
+background-size: contain
+
+---
+## Estimating the Variance Explained by Genome-Wide SNPs
+
+### Basic concept:
+- To fit all the SNPs simultaneously as **random effects** in a mixed linear model.
+
+- To estimate **the variance explained by all the SNPs** without testing for associations of any individual SNP with the trait.
+
+---
+class: inverse, center, middle
+
+# GCTA models
+
+
+---
+
+## Model (1)
+
+$$y = Xb + Wu + e \\
+with\\ var(y)=V=WW^{\prime}\sigma_u^2+I\sigma_e^2 \;\;(1)$$
+
+- $y$ is a $n \times 1$ vector of phenotypes(身長，BMI，糖尿病ありなしetc.);<br> $n =$ sample size;
+- $b$ is a vector of fixed covariates.
+- $u$ is a vector of **SNP effects** with $u \sim N(0, I\sigma_u^2)$
+- $I$ is a $n \times n$ identity matrix (単位行列)
+- $e$ is a vector of residual effects with $e \sim N(0, I\sigma_e^2)$
+- $W$ is a standardized SNP genotype matrix with the $ij$th element $w_{ij}=\frac{(x_{ij}-2p_i)}{\sqrt{2p_i(1-p_i)}}$, where $x_{ij}$ is the number of copies of the reference allele for the $i$th SNP of the $j$th individual and $p_i$ is the frequency of the reference allele of SNP $i$.
+
+---
+## Model (2)
+
+#### Define $A=\frac{WW^{\prime}}{N}$
+#### Define $\sigma_G^2$ as the variance explained by all the SNPs i.e., <br> $\sigma_G^2 = N\sigma_u^2$ with $N=$ number of SNPs.
+#### Equation (1) $$y = Xb + Wu + e \\ with\\ var(y)=V=WW^{\prime}\sigma_u^2+I\sigma_e^2 \;\;(1)$$
+#### is equivalent to equation (2) $$y = Xb + g + \epsilon \\ with \\ var(y)=V=A\sigma_G^2+I\sigma_e^2 \;\;(2)$$
+
+
+
+---
+class: middle
+## Equation (2)
+### $$y = Xb + g + \epsilon \\ with \\ var(y)=V=A\sigma_G^2+I\sigma_e^2 \;\;(2)$$
+
+- $g$ is a $n \times 1$ vector of the total additive genetic effects of the individuals with $g\sim N(0, A\sigma_G^2)$
+- $A=$ **genetic relationship matrix (GRM)** between individuals with the $kj$th element being $A_{kj}=\frac{1}{N}\sum_{i-1}^N\frac{(x_{ij}-2p_i)(x_{ik}-2p_i)}{2p_i(1-p_i)}$
+- $\sigma_G^2$ and $\sigma_e^2$ can be estimated by restricted maximum likelihood (REML) approach.
+
+
+---
+### $h_{SNP}^2$
+
+- **Define** $h_{SNP}^2=\frac{\sigma_G^2}{(\sigma_G^2+\sigma_e^2)}$ as the **proportion of phenotypic variance explained by all the SNPs**;
+- $h_{SNP}^2$ is **directly comparable** to the results from GWAS analyses.
+- **For Example, Human Height:**
+    - $\sim 10\%$ of variance explained by $180$ genome-wide significant SNPs $(p<5\times 10^{-8})$<sup>[1]</sup>;
+    - $h_{SNP}^2=0.45 (s.e.=0.08)$, meaning all common SNPs explain $\sim 45\%$ of the phenotypic variance<sup>[2]</sup>
+- Distinction needed: $h_{SNP}^2\neq (h^2) heritability$
+    - current generation of genotyping arrays are unlikely to perfectly tag all causal variants for a trait;
+    - $h_{SNP}^2$ from unrelated individuals is **an unbiased estimate of $h^2$**.
+
+.footnote[
+[1] Lango Allen, et al. (2010). Hundreds of variants clustered in genomic loci and biological pathways affect human height. Nature 467, 832–838.
+
+[2] Yang, J., et al. (2010). Common SNPs explain a large proportion of the heritability for human height. Nat. Genet. 42, 565–569.
+]
+
+
+---
+
+## [GCTA applications: (1)](http://cnsgenomics.com/software/gcta/index.html)
+
+* #### Step 1: generating **genetic relationship matrix (GRM)**<br>
+
+    + a GWAS dataset in PLINK binary PED format (`test.bed; test.bim; test.fam`)
+    + _Command 1_:
+```yaml
+./gcta64 --bfile test --autosome --make-grm --out test
+```
+    + _Command 2_: GRM for each chromosome (large dataset)
+```yaml
+./gcta64 --bfile test --chr1 --make-grm --out test_chr1
+./gcta64 --bfile test --chr2 --make-grm --out test_chr2
+...
+./gcta64 --bfile test --chr22 --make-grm --out test_chr22
+```
+    + and then merge all the GRMs by _command 3_:
+```yaml
+./gcta64 --mgrm grm_chrs.txt --make-grm --out test
+```
+
+---
+## [GCTA applications: (2)](http://cnsgenomics.com/software/gcta/index.html)
+
+* #### Step 2: estimate the variance explained by all SNPs by a Restricted Maximum Likelihood (REML) analysis of the phenotypes with the GRM.
+
+    + _Command 4_:
+```yaml
+./gcta64 --grm test --pheno test.phen --reml --out test
+```
+
+`sleep.phen:`
+```{r echo=F, eval=require('DT'), tidy=FALSE, warning = FALSE}
+sleep <- read.csv("sleep.csv")
+DT::datatable(
+  head(sleep, 10),
+  fillContainer = FALSE, options = list(pageLength = 3)
+)
+```
+
+---
+
+```yaml
+./gcta64 --reml --grm-bin JMICC --pheno sleep.phen --out sleep
+ ******************************************************************
+ Genome-wide Complex Trait Analysis (GCTA)
+ version 1.26.0
+ (C) 2010-2016, The University of Queensland
+ MIT License
+ Please report bugs to: Jian Yang <jian.yang@uq.edu.au>
+ *******************************************************************
+Analysis started: Sat May 13 17:50:51 2017
+
+Options:
+--reml
+--grm-bin JMICC
+--pheno sleep.phen
+--out sleep
+
+Note: This is a multi-thread program. You could specify the number of
+threads by the --thread-num option to speed up the computation if
+there are multiple processors in your machine.
+
+Reading IDs of the GRM from [JMICC.grm.id].
+14088 IDs read from [JMICC.grm.id].
+Reading the GRM from [JMICC.grm.bin].
+GRM for 14088 individuals are included from [JMICC.grm.bin].
+Reading phenotypes from [sleep.phen].
+Non-missing phenotypes of 9676 individuals are included from [sleep.phen].
+```
+
+---
+background-image: url(fig/calculation.jpg)
+background-size: contain
+
+---
+background-image: url(fig/memory.jpg)
+background-size: contain
+
+---
+class: middle
+### Common SNPs explain 23% of the heritability for sleep duration in JMICC study participants
+
+```yaml
+Summary Result of REML analysis:
+Source	  Variance   	SE
+V(G)	    86.516241	 12.555365
+V(e)	    288.099351	12.738188
+Vp	      374.615592	5.506539
+*V(G)/Vp	 0.230947	  0.033053
+LogL	    -32278.958
+LRT     	62.124
+df 	     1
+Pval    	1.61e-15
+n	       9326
+```
+
+---
+## Extension: Genetic correlation between two traits
+
+> Comparing the phenotypic similarity and the genetic similarity between individuals **within** and **cross** two traits.
+
+
+$$cov(y_{i1},y_{k1})=A_{ik}\sigma_{g1}^2\\var(y_{i1})=A_{ii}\sigma_{g1}^2+\sigma_{e1}^2$$
+$$cov(y_{i2},y_{k2})=A_{ik}\sigma_{g2}^2\\var(y_{i2})=A_{ii}\sigma_{g2}^2+\sigma_{e2}^2$$
+$$cov(y_{i1},y_{k2})=A_{ik}\sigma_{g1g2}\\cov(y_{i1},y_{i2})=A_{ii}\sigma_{g1g2}+\sigma_{e1e2}$$
+
+"1" = trait 1, "2" = trait 2; $\sigma_{g1g2} =$ genetic covariance; $\sigma_{e1e2}=$ environmental covariance<br>
+$${\bf Genetic\;correlation}\rightarrow r_g=\frac{\sigma_{g1g2}}{\sigma_{g1}\sigma_{g2}}$$
+
+
+---
+### **GCTA bivariate GREML analysis application**
+
+```yaml
+*./gcta64 --reml-bivar --grm JMICC --pheno sleepBMI.phen --out JMICCsleepBMI
+...
+Analysis started: Sun Apr 23 21:55:02 2017
+
+Options:
+--reml-bivar 1 2
+--grm JMICC
+--pheno sleepBMI.phen
+--out JMICCsleepBMI
+
+Reading IDs of the GRM from [JMICC.grm.id].
+14088 IDs read from [JMICC.grm.id].
+Reading the GRM from [JMICC.grm.bin].
+GRM for 14088 individuals are included from [JMICC.grm.bin].
+Reading phenotypes from [sleepBMI.phen].
+There are 2 traits specified in the file [sleepBMI.phen].
+Traits 1 and 2 are included in the bivariate analysis.
+Non-missing phenotypes of 14555 individuals are included from [sleepBMI.phen].
+13631 individuals are in common in these files.
+13617 non-missing phenotypes for trait 1 and 13619 for trait 2
+```
+
+---
+class: middle
+### The genetic correlation association between BMI and sleep duration
+
+```yaml
+Summary result of REML analysis:
+Source	Variance	SE
+V(G)_tr1	5.886921	0.261958
+V(G)_tr2	0.348178	0.023045
+C(G)_tr12	0.041237	0.062379
+V(e)_tr1	4.588593	0.212535
+V(e)_tr2	0.662649	0.021347
+C(e)_tr12	-0.028576	0.053324
+Vp_tr1	10.475513	0.133431
+Vp_tr2	1.010827	0.012377
+V(G)/Vp_tr1	0.561970	0.021571
+V(G)/Vp_tr2	0.344449	0.021459
+*rG	0.028803	0.043606
+```
+
+---
+### rG summary
+```{r echo=F, eval=require('DT'), tidy=FALSE, warning = FALSE}
+rgsummary <- read.csv("rgsummary.csv")
+DT::datatable(
+  head(rgsummary, 10),
+  fillContainer = FALSE, options = list(pageLength = 6)
+)
+```
+
+---
+class: middle
+### Correlation between two variables (both genetic and phenotypic correlation) in JMICC study
+<br>
+upper right: rG; <br>
+lower left: r
+
+| traits        |         Alcohol          |          Stress          |        Education        |           SBP           |
+|:-------------|:------------------------:|:------------------------:|:-----------------------:|:-----------------------:|
+| **Alchol**    |            －            | -0.13<br> (-0.32, 0.07)  | -0.11<br> (-0.28, 0.06) |  **0.27<br> (0.12, 0.43)**  |
+| **Stress**    | -0.06 <br>(-0.08, -0.03) |            －            |  **0.42<br> (0.14, 0.71)**  | -0.23<br> (-0.48, 0.02) |
+| **Education** |  0.10<br> (0.07, 0.12)   |  0.03<br> (0.00, 0.07)   |           －            | -0.13 <br>(-0.32, 0.07) |
+| **SBP**       |  0.19<br> (0.17, 0.21)   | -0.14<br> (-0.17, -0.11) | -0.02<br> (-0.06, 0.01) |           －            |
+
+
+
+
+---
+
+class: center, middle
+
+# Thanks!
